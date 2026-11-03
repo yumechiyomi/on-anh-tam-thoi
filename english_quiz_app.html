@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài Kiểm Tra Tiếng Anh 9 - THCS Đông Thụy Anh</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#2563eb',
+              600: '#1d4ed8',
+              700: '#1e40af',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbar for better reading experience */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- Sticky Top Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="bg-brand-600 text-white p-2 rounded-xl shadow-sm">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="font-bold text-slate-900 text-base sm:text-lg leading-tight">ĐỀ KIỂM TRA GIỮA HỌC KÌ I</h1>
+          <p class="text-xs text-slate-500">Môn Tiếng Anh 9 - THCS Đông Thụy Anh (2026 - 2027)</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <div class="hidden sm:flex flex-col items-end">
+          <span class="text-xs text-slate-400 font-medium">Tiến độ bài làm</span>
+          <span id="progress-text" class="text-sm font-bold text-brand-600">0 / 40 câu</span>
+        </div>
+        <button id="btn-top-submit" onclick="submitExam()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm hover:shadow flex items-center space-x-1.5">
+          <span>Nộp Bài</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="w-full bg-slate-100 h-1.5">
+      <div id="progress-bar" class="bg-brand-600 h-1.5 transition-all duration-300 w-0"></div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+    <!-- Result Banner (Hidden by default) -->
+    <div id="result-card" class="hidden mb-8 bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 text-center transition-all animate-fade-in">
+      <div id="score-badge" class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-brand-50 text-brand-600 mb-4 border-4 border-brand-100">
+        <span id="score-text" class="text-3xl font-extrabold">0/10</span>
+      </div>
+      <h2 id="result-title" class="text-2xl font-bold text-slate-900 mb-2">Hoàn thành bài thi!</h2>
+      <p id="result-subtitle" class="text-slate-600 mb-6 max-w-lg mx-auto">Bạn đã trả lời đúng <span id="correct-count" class="font-bold text-emerald-600">0</span> / <span id="total-count" class="font-bold">40</span> câu hỏi.</p>
+      
+      <div class="flex flex-wrap justify-center gap-4">
+        <button onclick="restartExam()" class="bg-brand-600 hover:bg-brand-700 text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow hover:shadow-md flex items-center space-x-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span>Làm Lại Bài Thi (Xáo Đề Mới)</span>
+        </button>
+        <button onclick="scrollToReview()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-6 py-2.5 rounded-xl transition-all flex items-center space-x-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          <span>Xem Chi Tiết Đáp Án</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Exam Container -->
+    <div id="quiz-container" class="space-y-6">
+      <!-- Dynamic Questions will be rendered here -->
+    </div>
+
+    <!-- Bottom Submit Button -->
+    <div class="mt-8 flex justify-center">
+      <button id="btn-bottom-submit" onclick="submitExam()" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white font-bold px-10 py-3.5 rounded-xl text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2">
+        <span>Chấm Điểm Bài Làm</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
+    <p>© 2026 THCS Đông Thụy Anh. Hệ thống ôn tập trực tuyến Tiếng Anh 9.</p>
+  </footer>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // Master questions dataset
+    const rawQuestionsData = [
+      // Multiple Choice 1-15
+      {
+        section: "Grammar & Vocabulary",
+        question: "When I arrived home, my brother ________ television.",
+        options: [
+          { text: "was watching", correct: true },
+          { text: "watched", correct: false },
+          { text: "watch", correct: false },
+          { text: "have watched", correct: false }
+        ],
+        explanation: "Sử dụng thì Quá khứ tiếp diễn (was watching) để diễn tả hành động đang xảy ra trong quá khứ thì một hành động khác (arrived) xen vào."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "She doesn't know what ________ when she arrives at the airport.",
+        options: [
+          { text: "to do", correct: true },
+          { text: "do", correct: false },
+          { text: "doing", correct: false },
+          { text: "did", correct: false }
+        ],
+        explanation: "Cấu trúc từ hỏi + động từ nguyên mẫu có 'to': Wh-word + to V (know what to do)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "My younger brother is interested in ________ model planes.",
+        options: [
+          { text: "building", correct: true },
+          { text: "build", correct: false },
+          { text: "to build", correct: false },
+          { text: "builds", correct: false }
+        ],
+        explanation: "Cấu trúc 'be interested in + V-ing' (thích/quan tâm đến việc gì)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "________ the rising unemployment, people still seem to be spending more.",
+        options: [
+          { text: "Despite", correct: true },
+          { text: "Although", correct: false },
+          { text: "Though", correct: false },
+          { text: "Therefore", correct: false }
+        ],
+        explanation: "Despite + cụm danh từ (the rising unemployment) dùng để chỉ sự nhượng bộ/đối lập. Although/Though đi với mệnh đề."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Stay ________ even during challenging times; a positive mindset is essential.",
+        options: [
+          { text: "optimistic", correct: true },
+          { text: "frustrated", correct: false },
+          { text: "physical", correct: false },
+          { text: "relaxed", correct: false }
+        ],
+        explanation: "'Optimistic' nghĩa là lạc quan. Vế sau đề cập 'positive mindset' (tinh thần tích cực)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "She showed me ________ from her recent trip to Japan.",
+        options: [
+          { text: "some interesting photographs", correct: true },
+          { text: "photographs interesting some", correct: false },
+          { text: "some photographs interesting", correct: false },
+          { text: "photographs some interesting", correct: false }
+        ],
+        explanation: "Trật tự đúng của cụm danh từ: Lượng từ (some) + Tính từ (interesting) + Danh từ (photographs)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "The artisan spent a lot of time trying to ________ how to carve wood using traditional tools.",
+        options: [
+          { text: "find out", correct: true },
+          { text: "look for", correct: false },
+          { text: "give up", correct: false },
+          { text: "turn down", correct: false }
+        ],
+        explanation: "Phrasal verb: 'find out' có nghĩa là tìm ra, tìm hiểu ra cách làm."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Mount Everest is ________ highest mountain in the world.",
+        options: [
+          { text: "the", correct: true },
+          { text: "a", correct: false },
+          { text: "an", correct: false },
+          { text: "Ø (no article)", correct: false }
+        ],
+        explanation: "Sử dụng mạo từ 'the' trước hình thức so sánh nhất (the highest)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "If you study hard for the final exam, you ________ good marks.",
+        options: [
+          { text: "will get", correct: true },
+          { text: "gets", correct: false },
+          { text: "got", correct: false },
+          { text: "would get", correct: false }
+        ],
+        explanation: "Câu điều kiện loại 1: Mệnh đề If chia ở hiện tại đơn (study), mệnh đề chính dùng 'will + V' (will get)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "You ________ eat too much candy. It's not good for your teeth.",
+        options: [
+          { text: "shouldn't", correct: true },
+          { text: "might", correct: false },
+          { text: "wouldn't", correct: false },
+          { text: "need", correct: false }
+        ],
+        explanation: "Dùng 'shouldn't' để đưa ra lời khuyên không nên làm gì vì không tốt cho sức khỏe."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Banks normally ________ priority to large businesses when deciding on loans.",
+        options: [
+          { text: "give", correct: true },
+          { text: "make", correct: false },
+          { text: "pay", correct: false },
+          { text: "do", correct: false }
+        ],
+        explanation: "Collocation cố định: 'give priority to' (dành ưu tiên cho ai/cái gì)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "The less junk food you eat, ________ you will be.",
+        options: [
+          { text: "the healthier", correct: true },
+          { text: "the healthiest", correct: false },
+          { text: "healthier", correct: false },
+          { text: "more healthier", correct: false }
+        ],
+        explanation: "Cấu trúc so sánh kép: The + comparative ..., the + comparative ... (The less..., the healthier...)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "The house with 3 bed rooms ________ the best choice for us at present.",
+        options: [
+          { text: "is", correct: true },
+          { text: "be", correct: false },
+          { text: "were", correct: false },
+          { text: "are", correct: false }
+        ],
+        explanation: "Chủ ngữ chính là 'The house' (số ít) nên động từ to be chia là 'is'."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "She bought a ________ handbag yesterday.",
+        options: [
+          { text: "beautiful black leather", correct: true },
+          { text: "black beautiful leather", correct: false },
+          { text: "beautiful leather black", correct: false },
+          { text: "leather black beautiful", correct: false }
+        ],
+        explanation: "Trật tự tính từ OSASCOMP: Opinion (beautiful) -> Color (black) -> Material (leather)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "I wish I ________ English as a native speaker.",
+        options: [
+          { text: "could speak", correct: true },
+          { text: "speaking", correct: false },
+          { text: "speak", correct: false },
+          { text: "speaks", correct: false }
+        ],
+        explanation: "Câu ước cho hiện tại/khả năng: S + wish + S + could + V."
+      },
+
+      // Closest & Opposite
+      {
+        section: "Closest & Opposite Meaning",
+        question: "Mark the letter A, B, C, or D to indicate the word CLOSEST in meaning to the underlined word:\n'Sam is a mechanic. He works in a large <u>workshop</u>.'",
+        options: [
+          { text: "a garage for repairing", correct: true },
+          { text: "gets tired", correct: false },
+          { text: "pays cash", correct: false },
+          { text: "gets money", correct: false }
+        ],
+        explanation: "'Workshop' (xưởng làm việc/sửa chữa) đồng nghĩa với 'a garage'."
+      },
+      {
+        section: "Closest & Opposite Meaning",
+        question: "Mark the letter A, B, C, or D to indicate the word CLOSEST in meaning to the underlined word:\n'Many young people leave rural areas to <u>settle down</u> in big cities for better job opportunities.'",
+        options: [
+          { text: "live permanently", correct: true },
+          { text: "move temporarily", correct: false },
+          { text: "visit occasionally", correct: false },
+          { text: "travel around", correct: false }
+        ],
+        explanation: "'Settle down' có nghĩa là định cư, sinh sống lâu dài (live permanently)."
+      },
+      {
+        section: "Closest & Opposite Meaning",
+        question: "Mark the letter A, B, C, or D to indicate the word OPPOSITE in meaning to the underlined word:\n'Tom felt <u>optimistic</u> about his job interview because he had prepared very carefully.'",
+        options: [
+          { text: "pessimistic", correct: true },
+          { text: "confident", correct: false },
+          { text: "hopeful", correct: false },
+          { text: "positive", correct: false }
+        ],
+        explanation: "'Optimistic' (lạc quan) trái nghĩa với 'pessimistic' (bi quan)."
+      },
+      {
+        section: "Closest & Opposite Meaning",
+        question: "Mark the letter A, B, C, or D to indicate the word OPPOSITE in meaning to the underlined word:\n'The artisan was <u>willing</u> to share his secret techniques with anyone who wanted to learn pottery.'",
+        options: [
+          { text: "reluctant", correct: true },
+          { text: "eager", correct: false },
+          { text: "ready", correct: false },
+          { text: "happy", correct: false }
+        ],
+        explanation: "'Willing' (sẵn lòng) trái nghĩa với 'reluctant' (miễn cưỡng, không sẵn lòng)."
+      },
+
+      // Sentence Arrangements
+      {
+        section: "Sentence Arrangement",
+        question: "Indicate the best arrangement of the sentences to make a meaningful letter:\na. Thank you very much for your lovely postcard from Nha Trang.\nb. Dear Nam,\nc. Hope you are enjoying your holiday. Write back to me soon! Best, Minh\nd. I am also planning a beach trip with my family next month.\ne. It sounds like you had a wonderful time there.",
+        options: [
+          { text: "b - a - e - d - c", correct: true },
+          { text: "b - c - a - e - d", correct: false },
+          { text: "a - b - e - d - c", correct: false },
+          { text: "b - a - d - e - c", correct: false }
+        ],
+        explanation: "Thứ tự bức thư chuẩn: Mở đầu (b) -> Cảm ơn thư (a) -> Cảm nghĩ về chuyến đi của bạn (e) -> Kế hoạch của mình (d) -> Lời chúc & Chào kết (c)."
+      },
+      {
+        section: "Sentence Arrangement",
+        question: "Indicate the best arrangement of the sentences to make a meaningful paragraph:\na. Secondly, living in the city gives us better job and educational opportunities.\nb. Firstly, it offers a wide variety of entertainment activities.\nc. However, urban life also has disadvantages like traffic jams and pollution.\nd. Living in a big city has both advantages and disadvantages.",
+        options: [
+          { text: "d - b - a - c", correct: true },
+          { text: "d - a - b - c", correct: false },
+          { text: "b - a - d - c", correct: false },
+          { text: "d - c - b - a", correct: false }
+        ],
+        explanation: "Cấu trúc đoạn văn: Câu chủ đề (d) -> Ý thứ nhất/Firstly (b) -> Ý thứ hai/Secondly (a) -> Ý tương phản/However (c)."
+      },
+      {
+        section: "Sentence Arrangement",
+        question: "Indicate the best arrangement of the sentences to make a meaningful dialogue:\na. Emma: Oh, hey David! I'm searching for a good mystery novel.\nb. David: Hi, Emma! I didn't expect to see you here. What are you looking for?\nc. David: You should try the latest one by John Grisham. It's a real page-turner!",
+        options: [
+          { text: "b - a - c", correct: true },
+          { text: "c - a - b", correct: false },
+          { text: "a - b - c", correct: false },
+          { text: "a - c - b", correct: false }
+        ],
+        explanation: "Thứ tự đối thoại: David chào & hỏi (b) -> Emma đáp lại & nêu nhu cầu (a) -> David đưa ra gợi ý (c)."
+      },
+
+      // Cloze Passage 1 - English Club
+      {
+        section: "Cloze Test 1 - Announcement",
+        context: "<b>Join Our English Speaking Club!</b><br>Do you want to improve your communication skills? Are you eager to <b>(Q23)</b> ________ English with native speakers? Come join the 'English for Everyone Club'! We provide <b>(Q24)</b> ________ useful speaking activities for teenagers.<br><br><b>Our Club Features:</b><br>• Weekly topic discussions and fun games.<br>• Public speaking workshops and storytelling contests.<br>• Friendly mentors to help you correct pronunciation mistakes.<br>• Supportive environment where members can <b>(Q25)</b> ________ confidence, improve fluency, and prepare for future exams. Join us now!",
+        question: "Choose the correct answer for blank (Q23):",
+        options: [
+          { text: "speak", correct: true },
+          { text: "speaking", correct: false },
+          { text: "spoke", correct: false },
+          { text: "speaks", correct: false }
+        ],
+        explanation: "Cấu trúc 'be eager to + V (nguyên mẫu)': eager to speak."
+      },
+      {
+        section: "Cloze Test 1 - Announcement",
+        context: "<b>Join Our English Speaking Club!</b><br>Do you want to improve your communication skills? Are you eager to <b>(Q23)</b> ________ English with native speakers? Come join the 'English for Everyone Club'! We provide <b>(Q24)</b> ________ useful speaking activities for teenagers.<br><br><b>Our Club Features:</b><br>• Weekly topic discussions and fun games.<br>• Public speaking workshops and storytelling contests.<br>• Friendly mentors to help you correct pronunciation mistakes.<br>• Supportive environment where members can <b>(Q25)</b> ________ confidence, improve fluency, and prepare for future exams. Join us now!",
+        question: "Choose the correct answer for blank (Q24):",
+        options: [
+          { text: "many", correct: true },
+          { text: "an", correct: false },
+          { text: "much", correct: false },
+          { text: "little", correct: false }
+        ],
+        explanation: "'Activities' là danh từ đếm được số nhiều nên dùng lượng từ 'many'."
+      },
+      {
+        section: "Cloze Test 1 - Announcement",
+        context: "<b>Join Our English Speaking Club!</b><br>Do you want to improve your communication skills? Are you eager to <b>(Q23)</b> ________ English with native speakers? Come join the 'English for Everyone Club'! We provide <b>(Q24)</b> ________ useful speaking activities for teenagers.<br><br><b>Our Club Features:</b><br>• Weekly topic discussions and fun games.<br>• Public speaking workshops and storytelling contests.<br>• Friendly mentors to help you correct pronunciation mistakes.<br>• Supportive environment where members can <b>(Q25)</b> ________ confidence, improve fluency, and prepare for future exams. Join us now!",
+        question: "Choose the correct answer for blank (Q25):",
+        options: [
+          { text: "build", correct: true },
+          { text: "take", correct: false },
+          { text: "do", correct: false },
+          { text: "make", correct: false }
+        ],
+        explanation: "Collocation: 'build confidence' (xây dựng sự tự tin)."
+      },
+
+      // Cloze Passage 2 - Workshop
+      {
+        section: "Cloze Test 2 - Workshop",
+        context: "<b>Exciting Workshop Opportunity!</b><br>Are you ready to enhance your skills? Join us for an exclusive workshop designed to help you grow and succeed. This event will take place <b>(Q26)</b> ________ a professional training center and will feature experienced speakers.<br>During the workshop, you will <b>(Q27)</b> ________ valuable knowledge and practical techniques. Whether you are a beginner or an expert, this helpful program is tailored to meet your needs. Don't miss this opportunity to invest in <b>(Q28)</b> ________ future!",
+        question: "Choose the correct answer for blank (Q26):",
+        options: [
+          { text: "at", correct: true },
+          { text: "in", correct: false },
+          { text: "for", correct: false },
+          { text: "on", correct: false }
+        ],
+        explanation: "Dùng giới từ 'at' để chỉ địa điểm cụ thể (take place at a professional training center)."
+      },
+      {
+        section: "Cloze Test 2 - Workshop",
+        context: "<b>Exciting Workshop Opportunity!</b><br>Are you ready to enhance your skills? Join us for an exclusive workshop designed to help you grow and succeed. This event will take place <b>(Q26)</b> ________ a professional training center and will feature experienced speakers.<br>During the workshop, you will <b>(Q27)</b> ________ valuable knowledge and practical techniques. Whether you are a beginner or an expert, this helpful program is tailored to meet your needs. Don't miss this opportunity to invest in <b>(Q28)</b> ________ future!",
+        question: "Choose the correct answer for blank (Q27):",
+        options: [
+          { text: "gain", correct: true },
+          { text: "remove", correct: false },
+          { text: "refuse", correct: false },
+          { text: "forget", correct: false }
+        ],
+        explanation: "Động từ 'gain knowledge' mang nghĩa là thu nhận, tích lũy kiến thức."
+      },
+      {
+        section: "Cloze Test 2 - Workshop",
+        context: "<b>Exciting Workshop Opportunity!</b><br>Are you ready to enhance your skills? Join us for an exclusive workshop designed to help you grow and succeed. This event will take place <b>(Q26)</b> ________ a professional training center and will feature experienced speakers.<br>During the workshop, you will <b>(Q27)</b> ________ valuable knowledge and practical techniques. Whether you are a beginner or an expert, this helpful program is tailored to meet your needs. Don't miss this opportunity to invest in <b>(Q28)</b> ________ future!",
+        question: "Choose the correct answer for blank (Q28):",
+        options: [
+          { text: "your", correct: true },
+          { text: "yours", correct: false },
+          { text: "you", correct: false },
+          { text: "us", correct: false }
+        ],
+        explanation: "Tính từ sở hữu 'your' đứng trước danh từ 'future' (tương lai của bạn)."
+      },
+
+      // Sentence Transformation
+      {
+        section: "Sentence Transformation",
+        question: "Choose the sentence closest in meaning:\n'Peter has a good relationship with his neighbors in the new apartment building.'",
+        options: [
+          { text: "Peter got on well with his neighbors in the new apartment building.", correct: true },
+          { text: "Peter doesn't talk to his neighbors in the new apartment building.", correct: false },
+          { text: "Peter hates his neighbors in the new apartment building.", correct: false },
+          { text: "Peter has no friends in the new apartment building.", correct: false }
+        ],
+        explanation: "Cụm 'have a good relationship with' đồng nghĩa với 'get on well with' (hòa thuận với ai)."
+      },
+      {
+        section: "Sentence Transformation",
+        question: "Choose the sentence closest in meaning:\n'\"We visited the traditional craft village yesterday,\" the students said.'",
+        options: [
+          { text: "The students said that they had visited the traditional craft village the day before.", correct: true },
+          { text: "The students said that they visited the traditional craft village yesterday.", correct: false },
+          { text: "The students told that they have visited the traditional craft village the previous day.", correct: false },
+          { text: "The students said that we had visited the traditional craft village yesterday.", correct: false }
+        ],
+        explanation: "Chuyển sang câu gián tiếp: Lùi thì Quá khứ đơn thành Quá khứ hoàn thành (had visited), đổi 'yesterday' thành 'the day before'."
+      },
+      {
+        section: "Sentence Transformation",
+        question: "Choose the sentence closest in meaning:\n'You must wear a warm coat because you might catch a cold outside.'",
+        options: [
+          { text: "If you don't want to catch a cold, you must wear a warm coat.", correct: true },
+          { text: "If you want to catch a cold, you must wear a warm coat.", correct: false },
+          { text: "You might catch a cold because you always wear a warm coat.", correct: false },
+          { text: "You will stay healthy because you don't wear a warm coat.", correct: false }
+        ],
+        explanation: "Ý nghĩa logic: Nếu bạn không muốn bị cảm lạnh thì bạn phải mặc áo ấm."
+      },
+      {
+        section: "Sentence Transformation",
+        question: "Choose the sentence that best combines the pair of sentences:\n'The room is dark. I find it difficult to read books.'",
+        options: [
+          { text: "The darker the room is, the more difficult I find it to read books.", correct: true },
+          { text: "The darker the room is, difficult I find it to read books.", correct: false },
+          { text: "The darker the room is, I find it more difficult to read books.", correct: false },
+          { text: "The dark the room is, the more difficult I find it to read books.", correct: false }
+        ],
+        explanation: "Cấu trúc so sánh kép: The + tính từ ngắn-er ..., the more + tính từ dài ... (The darker ..., the more difficult ...)."
+      },
+      {
+        section: "Sentence Transformation",
+        question: "Choose the sentence that best combines the pair of sentences:\n'The music was very loud; I couldn't hear what my friend was saying.'",
+        options: [
+          { text: "The music was so loud that I couldn't hear what my friend was saying.", correct: true },
+          { text: "The music was such loud that I couldn't hear what my friend was saying.", correct: false },
+          { text: "The music was so loud that I could hear what my friend was saying.", correct: false },
+          { text: "The music was such loud that I could hear what my friend was saying.", correct: false }
+        ],
+        explanation: "Cấu trúc So... that: S + V + so + Adj + that + Clause (Am nhạc quá to đến mức tôi không thể nghe thấy...)."
+      },
+
+      // Reading Comprehension 34-40
+      {
+        section: "Reading Comprehension",
+        context: `<div class="bg-slate-100 p-4 rounded-xl text-sm leading-relaxed mb-4 text-slate-700">
+          <p class="mb-2">In recent years, online learning has become an <b>essential</b> part of modern education. With the rapid development of the internet, students of all ages can access digital classrooms, video lectures, and interactive quizzes from the comfort of their homes. While traditional face-to-face schooling remains important, online education offers unique flexibility, allowing learners to study at their own pace and review recorded lessons whenever needed.</p>
+          <p class="mb-2">However, studying online also presents several challenges. One major drawback is the lack of direct social interaction between students and teachers, which can sometimes lead to feelings of isolation. Furthermore, sitting in front of a computer screen for long hours often causes physical problems such as eye strain, headaches, and a lack of physical activity. Distractions at home, such as social media notifications or family noises, can also make <b>it</b> difficult for students to concentrate fully on their studies.</p>
+          <p>To make the most of online learning, students need to develop good self-discipline and time-management skills. First, learners should create a quiet, dedicated study space free from potential distractions. Second, taking regular short breaks during study sessions helps protect eyesight and reduce mental fatigue. Finally, students should actively participate in online group discussions and stay connected with their classmates to maintain a healthy social balance. By combining proper learning habits with modern technology, education can become both effective and enjoyable.</p>
+        </div>`,
+        question: "What is the main idea of the passage?",
+        options: [
+          { text: "The benefits and challenges of online learning and how to manage them.", correct: true },
+          { text: "The history of the internet and computers.", correct: false },
+          { text: "Why traditional schools should be closed down permanently.", correct: false },
+          { text: "The importance of playing video games during study hours.", correct: false }
+        ],
+        explanation: "Bài đọc tổng hợp nội dung về cả lợi ích, thách thức của việc học online và phương pháp quản lý hiệu quả."
+      },
+      {
+        section: "Reading Comprehension",
+        context: `<div class="bg-slate-100 p-4 rounded-xl text-sm leading-relaxed mb-4 text-slate-700">
+          <p class="mb-2">In recent years, online learning has become an <b>essential</b> part of modern education. With the rapid development of the internet, students of all ages can access digital classrooms, video lectures, and interactive quizzes from the comfort of their homes. While traditional face-to-face schooling remains important, online education offers unique flexibility, allowing learners to study at their own pace and review recorded lessons whenever needed.</p>
+          <p class="mb-2">However, studying online also presents several challenges. One major drawback is the lack of direct social interaction between students and teachers, which can sometimes lead to feelings of isolation. Furthermore, sitting in front of a computer screen for long hours often causes physical problems such as eye strain, headaches, and a lack of physical activity. Distractions at home, such as social media notifications or family noises, can also make <b>it</b> difficult for students to concentrate fully on their studies.</p>
+          <p>To make the most of online learning, students need to develop good self-discipline and time-management skills. First, learners should create a quiet, dedicated study space free from potential distractions. Second, taking regular short breaks during study sessions helps protect eyesight and reduce mental fatigue. Finally, students should actively participate in online group discussions and stay connected with their classmates to maintain a healthy social balance. By combining proper learning habits with modern technology, education can become both effective and enjoyable.</p>
+        </div>`,
+        question: "What does the word 'it' in paragraph 2 refer to?",
+        options: [
+          { text: "to concentrate fully on their studies", correct: true },
+          { text: "traditional schooling", correct: false },
+          { text: "the internet", correct: false },
+          { text: "a video lecture", correct: false }
+        ],
+        explanation: "Từ 'it' ở đây là chủ ngữ giả trong cấu trúc 'make it + adj + to V' (make it difficult for students to concentrate...)."
+      },
+      {
+        section: "Reading Comprehension",
+        context: `<div class="bg-slate-100 p-4 rounded-xl text-sm leading-relaxed mb-4 text-slate-700">
+          <p class="mb-2">In recent years, online learning has become an <b>essential</b> part of modern education. With the rapid development of the internet, students of all ages can access digital classrooms, video lectures, and interactive quizzes from the comfort of their homes. While traditional face-to-face schooling remains important, online education offers unique flexibility, allowing learners to study at their own pace and review recorded lessons whenever needed.</p>
+          <p class="mb-2">However, studying online also presents several challenges. One major drawback is the lack of direct social interaction between students and teachers, which can sometimes lead to feelings of isolation. Furthermore, sitting in front of a computer screen for long hours often causes physical problems such as eye strain, headaches, and a lack of physical activity. Distractions at home, such as social media notifications or family noises, can also make <b>it</b> difficult for students to concentrate fully on their studies.</p>
+          <p>To make the most of online learning, students need to develop good self-discipline and time-management skills. First, learners should create a quiet, dedicated study space free from potential distractions. Second, taking regular short breaks during study sessions helps protect eyesight and reduce mental fatigue. Finally, students should actively participate in online group discussions and stay connected with their classmates to maintain a healthy social balance. By combining proper learning habits with modern technology, education can become both effective and enjoyable.</p>
+        </div>`,
+        question: "According to the passage, all of the following statements are true EXCEPT:",
+        options: [
+          { text: "Online education completely eliminates all learning difficulties.", correct: true },
+          { text: "Online learning allows students to study at their own pace.", correct: false },
+          { text: "Sitting in front of a screen for too long can cause eye strain and headaches.", correct: false },
+          { text: "Students should develop good self-discipline and time-management skills.", correct: false }
+        ],
+        explanation: "Phương án 'Online education completely eliminates all learning difficulties' là sai vì đoạn 2 nêu rõ học trực tuyến vẫn có nhiều thách thức."
+      },
+      {
+        section: "Reading Comprehension",
+        context: `<div class="bg-slate-100 p-4 rounded-xl text-sm leading-relaxed mb-4 text-slate-700">
+          <p class="mb-2">In recent years, online learning has become an <b>essential</b> part of modern education. With the rapid development of the internet, students of all ages can access digital classrooms, video lectures, and interactive quizzes from the comfort of their homes. While traditional face-to-face schooling remains important, online education offers unique flexibility, allowing learners to study at their own pace and review recorded lessons whenever needed.</p>
+          <p class="mb-2">However, studying online also presents several challenges. One major drawback is the lack of direct social interaction between students and teachers, which can sometimes lead to feelings of isolation. Furthermore, sitting in front of a computer screen for long hours often causes physical problems such as eye strain, headaches, and a lack of physical activity. Distractions at home, such as social media notifications or family noises, can also make <b>it</b> difficult for students to concentrate fully on their studies.</p>
+          <p>To make the most of online learning, students need to develop good self-discipline and time-management skills. First, learners should create a quiet, dedicated study space free from potential distractions. Second, taking regular short breaks during study sessions helps protect eyesight and reduce mental fatigue. Finally, students should actively participate in online group discussions and stay connected with their classmates to maintain a healthy social balance. By combining proper learning habits with modern technology, education can become both effective and enjoyable.</p>
+        </div>`,
+        question: "The word 'essential' in paragraph 1 is closest in meaning to:",
+        options: [
+          { text: "very important", correct: true },
+          { text: "unnecessary", correct: false },
+          { text: "dangerous", correct: false },
+          { text: "difficult", correct: false }
+        ],
+        explanation: "'Essential' có nghĩa là thiết yếu, rất quan trọng (very important)."
+      },
+      {
+        section: "Reading Comprehension",
+        context: `<div class="bg-slate-100 p-4 rounded-xl text-sm leading-relaxed mb-4 text-slate-700">
+          <p class="mb-2">In recent years, online learning has become an <b>essential</b> part of modern education. With the rapid development of the internet, students of all ages can access digital classrooms, video lectures, and interactive quizzes from the comfort of their homes. While traditional face-to-face schooling remains important, online education offers unique flexibility, allowing learners to study at their own pace and review recorded lessons whenever needed.</p>
+          <p class="mb-2">However, studying online also presents several challenges. One major drawback is the lack of direct social interaction between students and teachers, which can sometimes lead to feelings of isolation. Furthermore, sitting in front of a computer screen for long hours often causes physical problems such as eye strain, headaches, and a lack of physical activity. Distractions at home, such as social media notifications or family noises, can also make <b>it</b> difficult for students to concentrate fully on their studies.</p>
+          <p>To make the most of online learning, students need to develop good self-discipline and time-management skills. First, learners should create a quiet, dedicated study space free from potential distractions. Second, taking regular short breaks during study sessions helps protect eyesight and reduce mental fatigue. Finally, students should actively participate in online group discussions and stay connected with their classmates to maintain a healthy social balance. By combining proper learning habits with modern technology, education can become both effective and enjoyable.</p>
+        </div>`,
+        question: "Which of the following is mentioned as a way to improve online learning?",
+        options: [
+          { text: "Creating a quiet, dedicated study space free from distractions.", correct: true },
+          { text: "Ignoring all group discussions and classmates.", correct: false },
+          { text: "Staring at the computer screen continuously without any breaks.", correct: false },
+          { text: "Turning on all social media notifications while studying.", correct: false }
+        ],
+        explanation: "Đoạn 3 đề cập: 'First, learners should create a quiet, dedicated study space free from potential distractions.'"
+      },
+      {
+        section: "Reading Comprehension",
+        context: `<div class="bg-slate-100 p-4 rounded-xl text-sm leading-relaxed mb-4 text-slate-700">
+          <p class="mb-2">In recent years, online learning has become an <b>essential</b> part of modern education. With the rapid development of the internet, students of all ages can access digital classrooms, video lectures, and interactive quizzes from the comfort of their homes. While traditional face-to-face schooling remains important, online education offers unique flexibility, allowing learners to study at their own pace and review recorded lessons whenever needed.</p>
+          <p class="mb-2">However, studying online also presents several challenges. One major drawback is the lack of direct social interaction between students and teachers, which can sometimes lead to feelings of isolation. Furthermore, sitting in front of a computer screen for long hours often causes physical problems such as eye strain, headaches, and a lack of physical activity. Distractions at home, such as social media notifications or family noises, can also make <b>it</b> difficult for students to concentrate fully on their studies.</p>
+          <p>To make the most of online learning, students need to develop good self-discipline and time-management skills. First, learners should create a quiet, dedicated study space free from potential distractions. Second, taking regular short breaks during study sessions helps protect eyesight and reduce mental fatigue. Finally, students should actively participate in online group discussions and stay connected with their classmates to maintain a healthy social balance. By combining proper learning habits with modern technology, education can become both effective and enjoyable.</p>
+        </div>`,
+        question: "What is one major drawback of online learning mentioned in the passage?",
+        options: [
+          { text: "The lack of direct social interaction can lead to feelings of isolation.", correct: true },
+          { text: "Students have too much direct social interaction.", correct: false },
+          { text: "Students never experience any physical problems.", correct: false },
+          { text: "Online lessons are always recorded in poor quality.", correct: false }
+        ],
+        explanation: "Đoạn 2 nêu rõ: 'One major drawback is the lack of direct social interaction between students and teachers, which can sometimes lead to feelings of isolation.'"
+      },
+      {
+        section: "Reading Comprehension",
+        context: `<div class="bg-slate-100 p-4 rounded-xl text-sm leading-relaxed mb-4 text-slate-700">
+          <p class="mb-2">In recent years, online learning has become an <b>essential</b> part of modern education. With the rapid development of the internet, students of all ages can access digital classrooms, video lectures, and interactive quizzes from the comfort of their homes. While traditional face-to-face schooling remains important, online education offers unique flexibility, allowing learners to study at their own pace and review recorded lessons whenever needed.</p>
+          <p class="mb-2">However, studying online also presents several challenges. One major drawback is the lack of direct social interaction between students and teachers, which can sometimes lead to feelings of isolation. Furthermore, sitting in front of a computer screen for long hours often causes physical problems such as eye strain, headaches, and a lack of physical activity. Distractions at home, such as social media notifications or family noises, can also make <b>it</b> difficult for students to concentrate fully on their studies.</p>
+          <p>To make the most of online learning, students need to develop good self-discipline and time-management skills. First, learners should create a quiet, dedicated study space free from potential distractions. Second, taking regular short breaks during study sessions helps protect eyesight and reduce mental fatigue. Finally, students should actively participate in online group discussions and stay connected with their classmates to maintain a healthy social balance. By combining proper learning habits with modern technology, education can become both effective and enjoyable.</p>
+        </div>`,
+        question: "What can be inferred about students who study online?",
+        options: [
+          { text: "They need to combine proper learning habits with modern technology to succeed.", correct: true },
+          { text: "They do not need any discipline or time management.", correct: false },
+          { text: "They face zero challenges during their courses.", correct: false },
+          { text: "They should spend all their free time playing online games.", correct: false }
+        ],
+        explanation: "Câu kết thúc đoạn khẳng định: 'By combining proper learning habits with modern technology, education can become both effective and enjoyable.'"
+      }
+    ];
+
+    // State management variables
+    let currentQuestions = [];
+    let userAnswers = {}; // Map questionIndex -> selectedOptionIndex
+    let isSubmitted = false;
+
+    // Utility: Fisher-Yates Shuffle algorithm
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Initialize/Restart Exam
+    function initExam() {
+      // Deep copy and shuffle questions
+      let shuffledQ = shuffleArray(rawQuestionsData);
+      
+      // Shuffle options for each question
+      currentQuestions = shuffledQ.map((q) => {
+        return {
+          ...q,
+          options: shuffleArray(q.options)
+        };
+      });
+
+      userAnswers = {};
+      isSubmitted = false;
+
+      // Hide results card
+      document.getElementById('result-card').classList.add('hidden');
+      
+      // Enable Submit buttons
+      document.getElementById('btn-top-submit').classList.remove('hidden');
+      document.getElementById('btn-bottom-submit').classList.remove('hidden');
+
+      // Update progress
+      updateProgress();
+
+      // Render UI
+      renderQuiz();
+
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Render Quiz UI
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+
+      let currentSection = '';
+
+      currentQuestions.forEach((q, qIdx) => {
+        // Section Header if changed
+        if (q.section !== currentSection) {
+          currentSection = q.section;
+          const sectionHeader = document.createElement('div');
+          sectionHeader.className = "pt-4 pb-2 border-b-2 border-brand-500 mb-4 flex items-center space-x-2";
+          sectionHeader.innerHTML = `
+            <span class="w-3 h-3 rounded-full bg-brand-600"></span>
+            <h2 class="text-lg font-bold text-slate-800 uppercase tracking-wide">${currentSection}</h2>
+          `;
+          container.appendChild(sectionHeader);
+        }
+
+        // Question Card
+        const qCard = document.createElement('div');
+        qCard.id = `q-card-${qIdx}`;
+        qCard.className = "bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200/80 transition-all duration-200 hover:shadow-md";
+
+        // Context / Reading Passage (If available)
+        let contextHTML = q.context ? q.context : '';
+
+        // Options List
+        let optionsHTML = '';
+        const optionLabels = ['A', 'B', 'C', 'D'];
+
+        q.options.forEach((opt, oIdx) => {
+          optionsHTML += `
+            <button 
+              type="button"
+              onclick="selectOption(${qIdx}, ${oIdx})"
+              id="opt-${qIdx}-${oIdx}"
+              class="w-full text-left p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-100/80 transition-all flex items-start space-x-3 group cursor-pointer"
+            >
+              <span id="opt-label-${qIdx}-${oIdx}" class="flex-shrink-0 w-7 h-7 rounded-lg border border-slate-300 bg-white text-slate-600 font-semibold text-xs flex items-center justify-center group-hover:border-brand-500 group-hover:text-brand-600 transition-colors">
+                ${optionLabels[oIdx]}
+              </span>
+              <span class="text-slate-700 text-sm sm:text-base font-medium pt-0.5 leading-snug">${opt.text}</span>
+            </button>
+          `;
+        });
+
+        // Explanation Box (Hidden initially)
+        const expHTML = `
+          <div id="exp-${qIdx}" class="hidden mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-sm">
+            <div class="font-bold text-slate-800 mb-1 flex items-center space-x-1">
+              <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Giải thích chi tiết:</span>
+            </div>
+            <p class="text-slate-600 leading-relaxed">${q.explanation}</p>
+          </div>
+        `;
+
+        qCard.innerHTML = `
+          <div class="flex items-start justify-between mb-3">
+            <span class="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-600 font-bold text-xs">
+              Câu ${qIdx + 1} / ${currentQuestions.length}
+            </span>
+            <span id="status-badge-${qIdx}" class="hidden text-xs font-semibold px-2.5 py-1 rounded-full"></span>
+          </div>
+
+          ${contextHTML}
+
+          <h3 class="text-base sm:text-lg font-semibold text-slate-900 mb-4 whitespace-pre-line leading-relaxed">${q.question}</h3>
+
+          <div class="grid grid-cols-1 gap-2.5">
+            ${optionsHTML}
+          </div>
+
+          ${expHTML}
+        `;
+
+        container.appendChild(qCard);
+      });
+    }
+
+    // Select Option Handler
+    function selectOption(qIdx, oIdx) {
+      if (isSubmitted) return; // Prevent selection after submission
+
+      userAnswers[qIdx] = oIdx;
+
+      // Update UI selection state for this question
+      const totalOpts = currentQuestions[qIdx].options.length;
+      const optionLabels = ['A', 'B', 'C', 'D'];
+
+      for (let i = 0; i < totalOpts; i++) {
+        const btn = document.getElementById(`opt-${qIdx}-${i}`);
+        const label = document.getElementById(`opt-label-${qIdx}-${i}`);
+
+        if (i === oIdx) {
+          btn.className = "w-full text-left p-3.5 sm:p-4 rounded-xl border-2 border-brand-500 bg-brand-50/60 shadow-sm transition-all flex items-start space-x-3 cursor-pointer";
+          label.className = "flex-shrink-0 w-7 h-7 rounded-lg bg-brand-600 text-white font-bold text-xs flex items-center justify-center transition-colors shadow-sm";
+        } else {
+          btn.className = "w-full text-left p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-100/80 transition-all flex items-start space-x-3 group cursor-pointer";
+          label.className = "flex-shrink-0 w-7 h-7 rounded-lg border border-slate-300 bg-white text-slate-600 font-semibold text-xs flex items-center justify-center group-hover:border-brand-500 group-hover:text-brand-600 transition-colors";
+        }
+      }
+
+      updateProgress();
+    }
+
+    // Update Progress Indicator
+    function updateProgress() {
+      const answeredCount = Object.keys(userAnswers).length;
+      const totalCount = currentQuestions.length;
+      const percentage = (answeredCount / totalCount) * 100;
+
+      document.getElementById('progress-text').innerText = `${answeredCount} / ${totalCount} câu`;
+      document.getElementById('progress-bar').style.width = `${percentage}%`;
+    }
+
+    // Submit Exam & Grade
+    function submitExam() {
+      if (isSubmitted) return;
+
+      const answeredCount = Object.keys(userAnswers).length;
+      const totalCount = currentQuestions.length;
+
+      if (answeredCount < totalCount) {
+        const confirmSubmit = confirm(`Bạn mới làm được ${answeredCount}/${totalCount} câu. Bạn có chắc chắn muốn nộp bài không?`);
+        if (!confirmSubmit) return;
+      }
+
+      isSubmitted = true;
+
+      // Hide top/bottom submit buttons
+      document.getElementById('btn-top-submit').classList.add('hidden');
+      document.getElementById('btn-bottom-submit').classList.add('hidden');
+
+      let correctCount = 0;
+      const optionLabels = ['A', 'B', 'C', 'D'];
+
+      // Evaluate each question
+      currentQuestions.forEach((q, qIdx) => {
+        const selectedOptIdx = userAnswers[qIdx];
+        const qCard = document.getElementById(`q-card-${qIdx}`);
+        const statusBadge = document.getElementById(`status-badge-${qIdx}`);
+        const expBox = document.getElementById(`exp-${qIdx}`);
+
+        // Find correct option index
+        const correctOptIdx = q.options.findIndex(opt => opt.correct);
+
+        if (selectedOptIdx !== undefined && q.options[selectedOptIdx].correct) {
+          correctCount++;
+        }
+
+        // Highlight Options
+        q.options.forEach((opt, oIdx) => {
+          const btn = document.getElementById(`opt-${qIdx}-${oIdx}`);
+          const label = document.getElementById(`opt-label-${qIdx}-${oIdx}`);
+
+          btn.onclick = null; // Disable clicking
+          btn.classList.remove('cursor-pointer', 'hover:bg-slate-100/80');
+
+          if (oIdx === correctOptIdx) {
+            // Correct Answer -> Green
+            btn.className = "w-full text-left p-3.5 sm:p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 shadow-sm transition-all flex items-start space-x-3";
+            label.className = "flex-shrink-0 w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-sm";
+          } else if (oIdx === selectedOptIdx && oIdx !== correctOptIdx) {
+            // Wrong Selection -> Red
+            btn.className = "w-full text-left p-3.5 sm:p-4 rounded-xl border-2 border-rose-500 bg-rose-50 shadow-sm transition-all flex items-start space-x-3";
+            label.className = "flex-shrink-0 w-7 h-7 rounded-lg bg-rose-600 text-white font-bold text-xs flex items-center justify-center shadow-sm";
+          } else {
+            // Unselected & Neutral -> Fade out
+            btn.className = "w-full text-left p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/30 opacity-60 flex items-start space-x-3";
+            label.className = "flex-shrink-0 w-7 h-7 rounded-lg border border-slate-200 bg-white text-slate-400 font-semibold text-xs flex items-center justify-center";
+          }
+        });
+
+        // Show status badge
+        statusBadge.classList.remove('hidden');
+        if (selectedOptIdx === undefined) {
+          statusBadge.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700";
+          statusBadge.innerText = "Bỏ trống";
+        } else if (q.options[selectedOptIdx].correct) {
+          statusBadge.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700";
+          statusBadge.innerText = "Chính xác ✓";
+        } else {
+          statusBadge.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-100 text-rose-700";
+          statusBadge.innerText = "Chưa đúng ✗";
+        }
+
+        // Show explanation box
+        expBox.classList.remove('hidden');
+      });
+
+      // Show Score Summary Banner
+      const scoreScale10 = ((correctCount / totalCount) * 10).toFixed(1);
+      document.getElementById('score-text').innerText = `${scoreScale10}`;
+      document.getElementById('correct-count').innerText = correctCount;
+      document.getElementById('total-count').innerText = totalCount;
+
+      const resultTitle = document.getElementById('result-title');
+      const scoreBadge = document.getElementById('score-badge');
+
+      if (scoreScale10 >= 8.0) {
+        resultTitle.innerText = "Xuất sắc! 🎉";
+        scoreBadge.className = "inline-flex items-center justify-center w-24 h-24 rounded-full bg-emerald-50 text-emerald-600 mb-4 border-4 border-emerald-100";
+      } else if (scoreScale10 >= 6.5) {
+        resultTitle.innerText = "Kết quả khá tốt! 👍";
+        scoreBadge.className = "inline-flex items-center justify-center w-24 h-24 rounded-full bg-brand-50 text-brand-600 mb-4 border-4 border-brand-100";
+      } else if (scoreScale10 >= 5.0) {
+        resultTitle.innerText = "Đạt yêu cầu! Cố gắng thêm nhé! 💪";
+        scoreBadge.className = "inline-flex items-center justify-center w-24 h-24 rounded-full bg-amber-50 text-amber-600 mb-4 border-4 border-amber-100";
+      } else {
+        resultTitle.innerText = "Cần ôn tập kỹ hơn nữa! 📚";
+        scoreBadge.className = "inline-flex items-center justify-center w-24 h-24 rounded-full bg-rose-50 text-rose-600 mb-4 border-4 border-rose-100";
+      }
+
+      document.getElementById('result-card').classList.remove('hidden');
+
+      // Smooth scroll to top to see score
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Scroll to review questions
+    function scrollToReview() {
+      const container = document.getElementById('quiz-container');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Restart Exam
+    function restartExam() {
+      initExam();
+    }
+
+    // Initialize on load
+    window.onload = function() {
+      initExam();
+    };
+  </script>
+</body>
+</html>

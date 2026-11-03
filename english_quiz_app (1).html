@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đề Kiểm Tra Giữa Học Kỳ 1 - Tiếng Anh 9</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+  
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div>
+        <h1 class="font-bold text-lg text-slate-900">THCS ĐÔNG THỤY ANH</h1>
+        <p class="text-xs text-slate-500">Đề Minh Họa 2 - Giữa Học Kỳ I (2026 - 2027)</p>
+      </div>
+      <div class="flex items-center space-x-3">
+        <div id="progress-text" class="text-xs font-semibold px-3 py-1 bg-brand-50 text-brand-700 rounded-full border border-brand-100">
+          Đã làm: 0/26 câu
+        </div>
+        <button id="btn-top-submit" onclick="submitExam()" class="bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm px-4 py-1.5 rounded-lg transition-all shadow-sm">
+          Chấm Điểm
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-4 py-6">
+
+    <!-- Score Result Card (Hidden by default) -->
+    <div id="result-card" class="hidden mb-6 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div class="text-center">
+        <span class="inline-block text-4xl mb-2">🎯</span>
+        <h2 class="text-2xl font-bold text-slate-900">Kết Quả Bài Kiểm Tra</h2>
+        <div class="mt-4 flex justify-center items-baseline space-x-2">
+          <span id="score-text" class="text-5xl font-extrabold text-brand-600">0.0</span>
+          <span class="text-slate-400 font-medium text-xl">/ 10 điểm</span>
+        </div>
+        <p id="score-details" class="mt-2 text-sm text-slate-600">Số câu đúng: 0 / 26 câu</p>
+      </div>
+      <div class="mt-6 flex flex-wrap justify-center gap-3">
+        <button onclick="initExam()" class="bg-brand-600 hover:bg-brand-700 text-white font-medium px-5 py-2.5 rounded-xl transition-all shadow">
+          Làm Lại Bài Thi
+        </button>
+      </div>
+    </div>
+
+    <!-- Questions Form -->
+    <form id="quiz-form" onsubmit="event.preventDefault();" class="space-y-6">
+      <!-- Container render tự động bằng Javascript -->
+      <div id="questions-container" class="space-y-6"></div>
+
+      <!-- Bottom Submit Button -->
+      <div class="pt-4 flex justify-center">
+        <button id="btn-bottom-submit" onclick="submitExam()" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold text-base px-8 py-3 rounded-xl transition-all shadow-md hover:shadow-lg">
+          Nộp Bài & Xem Đáp Án
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    const rawQuestionsData = [
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 1. When I arrived home, my brother ________ television.",
+        options: [
+          { text: "watch", correct: false },
+          { text: "watched", correct: false },
+          { text: "was watching", correct: true },
+          { text: "have watched", correct: false }
+        ],
+        explanation: "Thì Quá khứ tiếp diễn (was watching) diễn tả hành động đang xảy ra trong quá khứ thì một hành động khác (arrived) xen vào."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 2. She doesn't know what ________ when she arrives at the airport.",
+        options: [
+          { text: "do", correct: false },
+          { text: "doing", correct: false },
+          { text: "to do", correct: true },
+          { text: "did", correct: false }
+        ],
+        explanation: "Cấu trúc từ hỏi + động từ nguyên mẫu có 'to': Wh-word + to V (know what to do)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 3. My younger brother is interested in ________ model planes.",
+        options: [
+          { text: "build", correct: false },
+          { text: "building", correct: true },
+          { text: "to build", correct: false },
+          { text: "builds", correct: false }
+        ],
+        explanation: "Cấu trúc 'be interested in + V-ing' (thích/quan tâm đến việc gì)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 4. ________ the rising unemployment, people still seem to be spending more.",
+        options: [
+          { text: "Despite", correct: true },
+          { text: "Although", correct: false },
+          { text: "Though", correct: false },
+          { text: "Therefore", correct: false }
+        ],
+        explanation: "Despite + cụm danh từ (the rising unemployment) dùng để chỉ sự nhượng bộ/đối lập."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 5. Stay ________ even during challenging times; a positive mindset is essential.",
+        options: [
+          { text: "frustrated", correct: false },
+          { text: "physical", correct: false },
+          { text: "optimistic", correct: true },
+          { text: "relaxed", correct: false }
+        ],
+        explanation: "'Optimistic' nghĩa là lạc quan. Vế sau đề cập 'positive mindset' (tinh thần tích cực)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 6. She showed me ________ from her recent trip to Japan.",
+        options: [
+          { text: "photographs interesting some", correct: false },
+          { text: "some photographs interesting", correct: false },
+          { text: "some interesting photographs", correct: true },
+          { text: "photographs some interesting", correct: false }
+        ],
+        explanation: "Trật tự đúng của cụm danh từ: Lượng từ (some) + Tính từ (interesting) + Danh từ (photographs)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 7. The artisan spent a lot of time trying to ________ how to carve wood using traditional tools.",
+        options: [
+          { text: "find out", correct: true },
+          { text: "look for", correct: false },
+          { text: "give up", correct: false },
+          { text: "turn down", correct: false }
+        ],
+        explanation: "Phrasal verb: 'find out' có nghĩa là tìm ra, tìm hiểu ra cách làm."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 8. Mount Everest is ________ highest mountain in the world.",
+        options: [
+          { text: "a", correct: false },
+          { text: "an", correct: false },
+          { text: "the", correct: true },
+          { text: "Ø", correct: false }
+        ],
+        explanation: "Sử dụng mạo từ 'the' trước hình thức so sánh nhất (the highest)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 9. If you study hard for the final exam, you ________ good marks.",
+        options: [
+          { text: "will get", correct: true },
+          { text: "gets", correct: false },
+          { text: "got", correct: false },
+          { text: "would get", correct: false }
+        ],
+        explanation: "Câu điều kiện loại 1: Mệnh đề If ở hiện tại đơn (study), mệnh đề chính dùng 'will + V' (will get)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 10. You ________ eat too much candy. It's not good for your teeth.",
+        options: [
+          { text: "might", correct: false },
+          { text: "wouldn't", correct: false },
+          { text: "need", correct: false },
+          { text: "shouldn't", correct: true }
+        ],
+        explanation: "Dùng 'shouldn't' để đưa ra lời khuyên không nên làm gì vì không tốt cho sức khỏe."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 11. Banks normally ________ priority to large businesses when deciding on loans.",
+        options: [
+          { text: "make", correct: false },
+          { text: "give", correct: true },
+          { text: "pay", correct: false },
+          { text: "do", correct: false }
+        ],
+        explanation: "Collocation cố định: 'give priority to' (dành ưu tiên cho ai/cái gì)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 12. The less junk food you eat, ________ you will be.",
+        options: [
+          { text: "the healthier", correct: true },
+          { text: "the healthiest", correct: false },
+          { text: "healthier", correct: false },
+          { text: "more healthier", correct: false }
+        ],
+        explanation: "Cấu trúc so sánh kép: The + comparative ..., the + comparative ... (The less..., the healthier...)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 13. The house with 3 bed rooms ________ the best choice for us at present.",
+        options: [
+          { text: "is", correct: true },
+          { text: "be", correct: false },
+          { text: "were", correct: false },
+          { text: "are", correct: false }
+        ],
+        explanation: "Chủ ngữ chính là 'The house' (số ít) nên động từ to be chia là 'is'."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 14. She bought a ________ handbag yesterday.",
+        options: [
+          { text: "beautiful black leather", correct: true },
+          { text: "black beautiful leather", correct: false },
+          { text: "beautiful leather black", correct: false },
+          { text: "leather black beautiful", correct: false }
+        ],
+        explanation: "Trật tự tính từ OSASCOMP: Opinion (beautiful) -> Color (black) -> Material (leather)."
+      },
+      {
+        section: "Grammar & Vocabulary",
+        question: "Question 15. I wish I ________ English as a native speaker.",
+        options: [
+          { text: "could speak", correct: true },
+          { text: "speaking", correct: false },
+          { text: "speak", correct: false },
+          { text: "speaks", correct: false }
+        ],
+        explanation: "Câu ước cho hiện tại/khả năng: S + wish + S + could + V."
+      },
+      {
+        section: "Closest & Opposite Meaning",
+        question: "Question 16. Mark the letter A, B, C, or D to indicate the word CLOSEST in meaning to the underlined word:\nSam is a mechanic. He works in a large <u>workshop</u>.",
+        options: [
+          { text: "gets tired", correct: false },
+          { text: "pays cash", correct: false },
+          { text: "gets money", correct: false },
+          { text: "works in a garage", correct: true }
+        ],
+        explanation: "'Workshop' (xưởng sửa chữa) đồng nghĩa với 'works in a garage'."
+      },
+      {
+        section: "Closest & Opposite Meaning",
+        question: "Question 17. Mark the letter A, B, C, or D to indicate the word CLOSEST in meaning to the underlined word:\nMany young people leave rural areas to <u>settle down</u> in big cities for better job opportunities.",
+        options: [
+          { text: "live permanently", correct: true },
+          { text: "move temporarily", correct: false },
+          { text: "visit occasionally", correct: false },
+          { text: "travel around", correct: false }
+        ],
+        explanation: "'Settle down' có nghĩa là định cư, sinh sống lâu dài (live permanently)."
+      },
+      {
+        section: "Closest & Opposite Meaning",
+        question: "Question 18. Mark the letter A, B, C, or D to indicate the word OPPOSITE in meaning to the underlined word:\nTom felt <u>optimistic</u> about his job interview because he had prepared very carefully.",
+        options: [
+          { text: "pessimistic", correct: true },
+          { text: "confident", correct: false },
+          { text: "hopeful", correct: false },
+          { text: "positive", correct: false }
+        ],
+        explanation: "'Optimistic' (lạc quan) trái nghĩa với 'pessimistic' (bi quan)."
+      },
+      {
+        section: "Closest & Opposite Meaning",
+        question: "Question 19. Mark the letter A, B, C, or D to indicate the word OPPOSITE in meaning to the underlined word:\nThe artisan was <u>willing</u> to share his secret techniques with anyone who wanted to learn pottery.",
+        options: [
+          { text: "eager", correct: false },
+          { text: "reluctant", correct: true },
+          { text: "ready", correct: false },
+          { text: "happy", correct: false }
+        ],
+        explanation: "'Willing' (sẵn lòng) trái nghĩa với 'reluctant' (miễn cưỡng, không sẵn lòng)."
+      },
+      {
+        section: "Sentence Arrangement",
+        question: "Question 20. Mark the letter A, B, C or D on your answer sheet to indicate the best arrangement of the sentences to make a meaningful letter:\na. Thank you very much for your lovely postcard from Nha Trang.\nb. Dear Nam,\nc. Hope you are enjoying your holiday. Write back to me soon! Best, Minh\nd. I am also planning a beach trip with my family next month.\ne. It sounds like you had a wonderful time there.",
+        options: [
+          { text: "b - a - e - d - c", correct: true },
+          { text: "b - c - a - e - d", correct: false },
+          { text: "a - b - e - d - c", correct: false },
+          { text: "b - a - d - e - c", correct: false }
+        ],
+        explanation: "Thứ tự bức thư chuẩn: Mở đầu (b) -> Cảm ơn thư (a) -> Cảm nghĩ về chuyến đi của bạn (e) -> Kế hoạch của mình (d) -> Lời chúc & Chào kết (c)."
+      },
+      {
+        section: "Sentence Arrangement",
+        question: "Question 21. Mark the letter A, B, C or D on your answer sheet to indicate the best arrangement of the sentences to make a meaningful paragraph:\na. Secondly, living in the city gives us better job and educational opportunities.\nb. Firstly, it offers a wide variety of entertainment activities.\nc. However, urban life also has disadvantages like traffic jams and pollution.\nd. Living in a big city has both advantages and disadvantages.",
+        options: [
+          { text: "d - b - a - c", correct: true },
+          { text: "d - a - b - c", correct: false },
+          { text: "b - a - d - c", correct: false },
+          { text: "d - c - b - a", correct: false }
+        ],
+        explanation: "Cấu trúc đoạn văn: Câu chủ đề (d) -> Ý thứ nhất/Firstly (b) -> Ý thứ hai/Secondly (a) -> Ý tương phản/However (c)."
+      },
+      {
+        section: "Sentence Arrangement",
+        question: "Question 22. Mark the letter A, B, C or D on your answer sheet to indicate the best arrangement of the sentences to make a meaningful dialogue:\na. Emma: Oh, hey David! I'm searching for a good mystery novel.\nb. David: Hi, Emma! I didn't expect to see you here. What are you looking for?\nc. David: You should try the latest one by John Grisham. It's a real page-turner!",
+        options: [
+          { text: "c - a - b", correct: false },
+          { text: "a - b - c", correct: false },
+          { text: "a - c - b", correct: false },
+          { text: "b - a - c", correct: true }
+        ],
+        explanation: "Thứ tự đối thoại: David chào & hỏi (b) -> Emma đáp lại & nêu nhu cầu (a) -> David đưa ra gợi ý (c)."
+      },
+      {
+        section: "Sentence Transformation",
+        question: "Question 29. Mark the letter A, B, C or D on your answer sheet to indicate the sentence that is closest in meaning to the original sentence:\nPeter has a good relationship with his neighbors in the new apartment building.",
+        options: [
+          { text: "Peter doesn't talk to his neighbors in the new apartment building.", correct: false },
+          { text: "Peter got on well with his neighbors in the new apartment building.", correct: true },
+          { text: "Peter hates his neighbors in the new apartment building.", correct: false },
+          { text: "Peter has no friends in the new apartment building.", correct: false }
+        ],
+        explanation: "Cụm 'have a good relationship with' đồng nghĩa với 'get on well with' (hòa thuận với ai)."
+      },
+      {
+        section: "Sentence Transformation",
+        question: "Question 30. Mark the letter A, B, C or D on your answer sheet to indicate the sentence that is closest in meaning to the original sentence:\n\"We visited the traditional craft village yesterday,\" the students said.",
+        options: [
+          { text: "The students said that they visited the traditional craft village yesterday.", correct: false },
+          { text: "The students said that they had visited the traditional craft village the day before.", correct: true },
+          { text: "The students told that they have visited the traditional craft village the previous day.", correct: false },
+          { text: "The students said that we had visited the traditional craft village yesterday.", correct: false }
+        ],
+        explanation: "Chuyển sang câu gián tiếp: Lùi thì Quá khứ đơn thành Quá khứ hoàn thành (had visited), đổi 'yesterday' thành 'the day before'."
+      },
+      {
+        section: "Sentence Transformation",
+        question: "Question 31. Mark the letter A, B, C or D on your answer sheet to indicate the sentence that is closest in meaning to the original sentence:\nYou must wear a warm coat because you might catch a cold outside.",
+        options: [
+          { text: "If you want to catch a cold, you must wear a warm coat.", correct: false },
+          { text: "If you don't want to catch a cold, you must wear a warm coat.", correct: true },
+          { text: "You might catch a cold because you always wear a warm coat.", correct: false },
+          { text: "You will stay healthy because you don't wear a warm coat.", correct: false }
+        ],
+        explanation: "Ý nghĩa logic: Nếu bạn không muốn bị cảm lạnh thì bạn phải mặc áo ấm."
+      },
+      {
+        section: "Sentence Transformation",
+        question: "Question 32. Mark the letter A, B, C or D on your answer sheet to indicate the sentence that combines each pair of sentences:\nThe room is dark. I find it difficult to read books.",
+        options: [
+          { text: "The darker the room is, the more difficult I find it to read books.", correct: true },
+          { text: "The darker the room is, difficult I find it to read books.", correct: false },
+          { text: "The darker the room is, I find it more difficult to read books.", correct: false },
+          { text: "The dark the room is, the more difficult I find it to read books.", correct: false }
+        ],
+        explanation: "Cấu trúc so sánh kép: The + tính từ ngắn-er ..., the more + tính từ dài ... (The darker ..., the more difficult ...)."
+      },
+      {
+        section: "Sentence Transformation",
+        question: "Question 33. Mark the letter A, B, C or D on your answer sheet to indicate the sentence that combines each pair of sentences:\nThe music was very loud; I couldn't hear what my friend was saying.",
+        options: [
+          { text: "The music was such loud that I couldn't hear what my friend was saying.", correct: false },
+          { text: "The music was so loud that I couldn't hear what my friend was saying.", correct: true },
+          { text: "The music was so loud that I could hear what my friend was saying.", correct: false }
+        ],
+        explanation: "Cấu trúc So... that: S + V + so + Adj + that + Clause (Âm nhạc quá to đến mức tôi không thể nghe thấy...)."
+      }
+    ];
+
+    let currentQuestions = [];
+    let userAnswers = {};
+    let isSubmitted = false;
+
+    function initExam() {
+      currentQuestions = JSON.parse(JSON.stringify(rawQuestionsData));
+      userAnswers = {};
+      isSubmitted = false;
+
+      document.getElementById('result-card').classList.add('hidden');
+      document.getElementById('btn-top-submit').classList.remove('hidden');
+      document.getElementById('btn-bottom-submit').classList.remove('hidden');
+
+      updateProgress();
+      renderQuiz();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateProgress() {
+      const answeredCount = Object.keys(userAnswers).length;
+      document.getElementById('progress-text').innerText = `Đã làm: ${answeredCount}/${currentQuestions.length} câu`;
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('questions-container');
+      container.innerHTML = '';
+
+      const labels = ['A', 'B', 'C', 'D'];
+
+      currentQuestions.forEach((q, qIndex) => {
+        const card = document.createElement('div');
+        card.className = "bg-white border border-slate-200 rounded-2xl p-6 shadow-sm";
+        card.id = `question-${qIndex}`;
+
+        let html = '';
+
+        if (q.context) {
+          html += q.context;
+        }
+
+        html += `
+          <div class="flex items-start justify-between mb-4">
+            <h3 class="font-semibold text-slate-900 text-base leading-relaxed flex-1">${q.question.replace(/\n/g, '<br>')}</h3>
+          </div>
+          <div class="space-y-2.5">
+        `;
+
+        q.options.forEach((opt, oIndex) => {
+          const isSelected = userAnswers[qIndex] === oIndex;
+          let optionStyle = "border-slate-200 hover:bg-slate-50 text-slate-700";
+
+          if (isSubmitted) {
+            if (opt.correct) {
+              optionStyle = "border-green-500 bg-green-50 text-green-900 font-medium";
+            } else if (isSelected && !opt.correct) {
+              optionStyle = "border-red-500 bg-red-50 text-red-900 font-medium";
+            } else {
+              optionStyle = "border-slate-100 bg-slate-50 text-slate-400 opacity-60";
+            }
+          } else if (isSelected) {
+            optionStyle = "border-brand-500 bg-brand-50 text-brand-900 font-medium";
+          }
+
+          html += `
+            <label onclick="selectOption(${qIndex}, ${oIndex})" class="flex items-center p-3.5 border rounded-xl cursor-pointer transition-all ${optionStyle}">
+              <input type="radio" name="q_${qIndex}" value="${oIndex}" ${isSelected ? 'checked' : ''} ${isSubmitted ? 'disabled' : ''} class="hidden">
+              <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg border text-sm font-bold mr-3 ${isSelected ? 'bg-brand-600 text-white border-brand-600' : 'bg-slate-100 text-slate-600 border-slate-300'}">
+                ${labels[oIndex]}
+              </span>
+              <span class="text-sm flex-1">${opt.text}</span>
+            </label>
+          `;
+        });
+
+        html += `</div>`;
+
+        if (isSubmitted) {
+          const isCorrect = userAnswers[qIndex] !== undefined && q.options[userAnswers[qIndex]].correct;
+          html += `
+            <div class="mt-4 pt-4 border-t border-slate-100">
+              <div class="flex items-center space-x-2 text-sm font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}">
+                <span>${isCorrect ? '✓ Đúng' : '✗ Sai'}</span>
+              </div>
+              <p class="mt-1 text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                <span class="font-semibold text-slate-700">Giải thích:</span> ${q.explanation}
+              </p>
+            </div>
+          `;
+        }
+
+        card.innerHTML = html;
+        container.appendChild(card);
+      });
+    }
+
+    function selectOption(qIndex, oIndex) {
+      if (isSubmitted) return;
+      userAnswers[qIndex] = oIndex;
+      updateProgress();
+      renderQuiz();
+    }
+
+    function submitExam() {
+      if (isSubmitted) return;
+
+      const answeredCount = Object.keys(userAnswers).length;
+      if (answeredCount < currentQuestions.length) {
+        if (!confirm(`Bạn mới làm ${answeredCount}/${currentQuestions.length} câu. Bạn có chắc muốn nộp bài ngay?`)) {
+          return;
+        }
+      }
+
+      isSubmitted = true;
+
+      let correctCount = 0;
+      currentQuestions.forEach((q, qIndex) => {
+        const selected = userAnswers[qIndex];
+        if (selected !== undefined && q.options[selected].correct) {
+          correctCount++;
+        }
+      });
+
+      const score = ((correctCount / currentQuestions.length) * 10).toFixed(1);
+
+      document.getElementById('score-text').innerText = score;
+      document.getElementById('score-details').innerText = `Số câu đúng: ${correctCount} / ${currentQuestions.length} câu`;
+      document.getElementById('result-card').classList.remove('hidden');
+
+      document.getElementById('btn-top-submit').classList.add('hidden');
+      document.getElementById('btn-bottom-submit').classList.add('hidden');
+
+      renderQuiz();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.onload = function() {
+      initExam();
+    };
+  </script>
+</body>
+</html>
